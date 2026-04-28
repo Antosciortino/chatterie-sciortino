@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: TODO_USER/chatterie-sciortino
+  repo: Antosciortino/chatterie-sciortino
   branch: main
   base_url: https://api.netlify.com
   auth_endpoint: auth
