@@ -1,0 +1,30 @@
+---
+interface Props {
+  size?: number;
+  rotate?: number;
+  class?: string;
+}
+const { size = 24, rotate = 0, class: className = '' } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 100 100"
+  width={size}
+  height={size}
+  class={`paw ${className}`}
+  style={`transform: rotate(${rotate}deg);`}
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <!-- Main pad -->
+  <path d="M 50 95 C 28 95 22 75 32 60 C 38 50 45 48 50 48 C 55 48 62 50 68 60 C 78 75 72 95 50 95 Z" fill="currentColor"/>
+  <!-- Toes -->
+  <ellipse cx="22" cy="42" rx="8" ry="11" fill="currentColor"/>
+  <ellipse cx="40" cy="22" rx="8" ry="11" fill="currentColor"/>
+  <ellipse cx="60" cy="22" rx="8" ry="11" fill="currentColor"/>
+  <ellipse cx="78" cy="42" rx="8" ry="11" fill="currentColor"/>
+</svg>
+
+<style>
+  .paw { display: inline-block; vertical-align: middle; }
+</style>

@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SleepingCat from '../components/SleepingCat.astro';
+import PawPrint from '../components/PawPrint.astro';
+---
+
+<BaseLayout titre="Page introuvable" description="Cette page n'existe pas, ou plus.">
+  <section class="section">
+    <div class="container">
+      <div class="art" aria-hidden="true">
+        <SleepingCat size={260} />
+      </div>
+      <p class="eyebrow">404</p>
+      <h1>Cette page fait la sieste.</h1>
+      <p class="lede">
+        Il n'y a rien à cette adresse. Le mieux est sûrement de revenir à
+        l'accueil et de repartir de là.
+      </p>
+      <p class="cta">
+        <a href="/" class="btn">Retour à l'accueil</a>
+        <a href="/portee/" class="link">Voir les chatons →</a>
+      </p>
+      <div class="paws" aria-hidden="true">
+        <PawPrint size={16} rotate={-15} />
+        <PawPrint size={20} rotate={10} />
+        <PawPrint size={16} rotate={-5} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .art {
+    color: var(--accent);
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  .lede {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 50ch;
+    margin: 0.5rem 0 2rem;
+  }
+  .cta { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .link { color: var(--text); text-decoration: none; }
+  .link:hover { color: var(--accent-dark); }
+  .paws {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    color: var(--accent);
+    opacity: 0.4;
+  }
+</style>

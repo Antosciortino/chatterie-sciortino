@@ -1,0 +1,192 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SleepingCat from '../../components/SleepingCat.astro';
+import PawPrint from '../../components/PawPrint.astro';
+import { chatonSlug } from '../../lib/slug';
+
+const portees = (await getCollection('portees')).sort((a, b) => b.data.date_naissance.getTime() - a.data.date_naissance.getTime());
+const current = portees[0];
+const archives = portees.slice(1);
+
+const currentExtra = current ? await (async () => {
+  const pere = await getEntry(current.data.pere);
+  const mere = await getEntry(current.data.mere);
+  const rendered = await render(current);
+  return { pere, mere, CurrentBody: rendered.Content };
+})() : null;
+const CurrentBody = currentExtra?.CurrentBody;
+---
+
+<BaseLayout titre="Chatons">
+  <section class="section">
+    <div class="container">
+      {!current && (
+        <div class="empty">
+          <div class="empty-art" aria-hidden="true">
+            <SleepingCat size={240} />
+          </div>
+          <p class="eyebrow">Chatons</p>
+          <h1>Pas de portée pour le moment</h1>
+          <p class="lede">
+            On fait une seule portée par an. Écrivez-nous si vous voulez être
+            prévenu pour la prochaine.
+          </p>
+          <p><a href="/contact/" class="btn">Nous contacter</a></p>
+        </div>
+      )}
+
+      {current && currentExtra && (
+        <>
+          <p class="eyebrow">Portée actuelle</p>
+          <h1>{current.data.titre}</h1>
+          <p class="lede">
+            Né{current.data.chatons.length > 1 ? 's' : ''} le {current.data.date_naissance.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {' '}— issu{current.data.chatons.length > 1 ? 's' : ''} de
+            {' '}<a href={`/parents/${currentExtra.mere.id}/`}>{currentExtra.mere.data.nom}</a>
+            {' '}et <a href={`/parents/${currentExtra.pere.id}/`}>{currentExtra.pere.data.nom}</a>.
+          </p>
+
+          <div class="legal-info" style="margin: 1.5rem 0; max-width: 60ch;">
+            <strong>Mentions légales de la portée :</strong><br/>
+            Race : Ragdoll · LOOF · Numéro de portée : {current.data.numero_portee_loof} · ICAD mère : {current.data.icad_mere}
+            · {current.data.chatons.length} chaton{current.data.chatons.length > 1 ? 's' : ''} dans la portée.
+          </div>
+
+          {current.body && CurrentBody && (
+            <div class="prose"><CurrentBody /></div>
+          )}
+
+          <h2 style="margin-top: 3rem;">Les chatons</h2>
+          <div class="grid">
+            {current.data.chatons.map(chaton => (
+              <article class="card chaton-card">
+                <a href={`/portee/${current.id}/${chatonSlug(chaton.nom)}/`} class="chaton-link">
+                  <div class="card-img">
+                    {chaton.photos.length === 0 && <div class="no-photo" aria-label="Photos à venir"></div>}
+                    {chaton.photos.map((p, i) => (
+                      <Image src={p} alt={chaton.nom} width={600} height={450} class:list={['main-photo', { active: i === 0 }]} />
+                    ))}
+                  </div>
+                  <div class="card-body">
+                    <h3>{chaton.nom}</h3>
+                    <p class="muted">{chaton.sexe === 'mâle' ? 'Mâle' : 'Femelle'} · {chaton.couleur}</p>
+                    <p><span class={`badge ${chaton.statut}`}>{chaton.statut}</span></p>
+                    {chaton.notes && <p class="notes">{chaton.notes}</p>}
+                  </div>
+                </a>
+                {chaton.photos.length > 1 && (
+                  <div class="thumbs" role="tablist" aria-label="Plus de photos">
+                    {chaton.photos.map((p, i) => (
+                      <button type="button" class:list={['thumb', { active: i === 0 }]} data-index={i} aria-label={`Photo ${i + 1}`}>
+                        <Image src={p} alt="" width={120} height={90} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+
+      {archives.length > 0 && (
+        <section style="margin-top: 4rem;">
+          <h2>Portées précédentes</h2>
+          <ul class="archives">
+            {archives.map(p => (
+              <li>
+                <strong>{p.data.titre}</strong>
+                <span class="muted"> — {p.data.date_naissance.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lede { font-size: 1.1rem; color: var(--text-muted); max-width: 65ch; }
+  .muted { color: var(--text-muted); margin: 0.25rem 0; }
+  .notes { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; }
+  .archives { list-style: none; padding: 0; margin-top: 1rem; }
+  .archives li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .prose { max-width: 65ch; margin: 1.5rem 0; }
+  .empty { text-align: left; max-width: 60ch; }
+  .empty-art {
+    color: var(--accent);
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  .empty .lede { margin: 0.75rem 0 1.5rem; }
+
+  .chaton-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  .chaton-card .card-img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--bg-alt);
+  }
+  .chaton-card .main-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .chaton-card .main-photo.active { opacity: 1; }
+  .chaton-card .no-photo {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-alt);
+  }
+
+  .thumbs {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0 1.25rem 1.25rem;
+    flex-wrap: wrap;
+  }
+  .thumb {
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.15s, transform 0.15s;
+    width: 56px;
+    height: 42px;
+    flex-shrink: 0;
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .thumb.active { border-color: var(--accent); }
+  .thumb:hover { transform: translateY(-1px); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.chaton-card').forEach(card => {
+    const mains = card.querySelectorAll<HTMLElement>('.main-photo');
+    const thumbs = card.querySelectorAll<HTMLButtonElement>('.thumb');
+    thumbs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        mains.forEach((m, i) => m.classList.toggle('active', i === idx));
+        thumbs.forEach((t, i) => t.classList.toggle('active', i === idx));
+      });
+    });
+  });
+</script>

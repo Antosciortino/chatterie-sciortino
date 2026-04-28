@@ -1,0 +1,171 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RagdollFace from '../components/RagdollFace.astro';
+import PawPrint from '../components/PawPrint.astro';
+
+const chats = (await getCollection('chats')).sort((a, b) => a.data.ordre - b.data.ordre);
+const portees = (await getCollection('portees')).sort((a, b) => b.data.date_naissance.getTime() - a.data.date_naissance.getTime());
+const portee = portees[0];
+
+const dispoCount = portee?.data.chatons.filter(c => c.statut === 'disponible').length ?? 0;
+---
+
+<BaseLayout titre="Accueil">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Chatterie Sciortino',
+    description: 'Élevage familial de Ragdolls dans le Var. Une seule portée par an, chatons LOOF élevés à la maison.',
+    url: 'https://chatterie-sciortino.netlify.app',
+    image: 'https://chatterie-sciortino.netlify.app/og-image.jpg',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Gonfaron',
+      postalCode: '83590',
+      addressRegion: 'Provence-Alpes-Côte d’Azur',
+      addressCountry: 'FR',
+    },
+    geo: { '@type': 'GeoCoordinates', latitude: 43.3215, longitude: 6.2897 },
+    areaServed: { '@type': 'Country', name: 'France' },
+    knowsAbout: ['Ragdoll', 'Élevage félin', 'LOOF'],
+    sameAs: ['https://www.facebook.com/antonina.sciortino.7'],
+  })} />
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">Élevage familial · Gonfaron, Var</p>
+        <h1>Des Ragdolls nés à la maison,<br/>en plein cœur du Var.</h1>
+        <p class="lede">
+          Une seule portée par an, élevée à la maison, dans le calme.
+          Des chatons LOOF, qui grandissent en famille avant de partir dans la leur.
+        </p>
+        <div class="cta-row">
+          <a href="/portee/" class="btn">Voir les chatons</a>
+          <a href="/demarche/" class="link">Notre démarche →</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <RagdollFace size={260} float />
+      </div>
+    </div>
+  </section>
+
+  <div class="paw-divider" aria-hidden="true">
+    <PawPrint size={18} rotate={-15} />
+    <PawPrint size={22} rotate={10} />
+    <PawPrint size={18} rotate={-8} />
+  </div>
+
+  {chats.length > 0 && (
+    <section class="section section-alt">
+      <div class="container">
+        <p class="eyebrow">Les parents</p>
+        <h2>Nos chats</h2>
+        <p class="muted">Notre mâle et notre femelle, testés et suivis par un vétérinaire.</p>
+        <div class="grid" style="margin-top: 2rem;">
+          {chats.slice(0, 3).map(chat => (
+            <a href={`/parents/${chat.id}/`} class="card">
+              <div class="card-img">
+                <Image src={chat.data.photo} alt={chat.data.nom} width={500} height={375} />
+              </div>
+              <div class="card-body">
+                <h3>{chat.data.nom}</h3>
+                <p class="muted">{chat.data.sexe === 'mâle' ? 'Mâle' : 'Femelle'} · {chat.data.couleur}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+        {chats.length > 3 && (
+          <p style="margin-top: 1.5rem;"><a href="/parents/">Voir tous les chats →</a></p>
+        )}
+      </div>
+    </section>
+  )}
+
+  {portee && (
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Portée actuelle</p>
+        <h2>{portee.data.titre}</h2>
+        <p class="muted">
+          Né{portee.data.chatons.length > 1 ? 's' : ''} le {portee.data.date_naissance.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {dispoCount > 0 ? ` · ${dispoCount} chaton${dispoCount > 1 ? 's' : ''} disponible${dispoCount > 1 ? 's' : ''}` : ' · complet'}
+        </p>
+        <p style="margin-top: 1.5rem;"><a href="/portee/" class="btn">Découvrir la portée</a></p>
+      </div>
+    </section>
+  )}
+
+  <section class="section section-alt">
+    <div class="container">
+      <p class="eyebrow">Notre démarche</p>
+      <h2>Élever, ce n'est pas produire.</h2>
+      <p style="max-width: 60ch; font-size: 1.1rem;">
+        Chaque chaton naît et grandit chez nous, en pleine maison.
+        Une seule portée par an, pour qu'on ait le temps de bien faire les choses
+        et de suivre chaque chaton jusqu'à son départ.
+      </p>
+      <p style="margin-top: 1.5rem;"><a href="/demarche/">Lire la suite →</a></p>
+    </div>
+  </section>
+
+  <div class="paw-divider paw-divider-tight" aria-hidden="true">
+    <PawPrint size={16} rotate={20} />
+    <PawPrint size={20} rotate={-12} />
+    <PawPrint size={16} rotate={8} />
+  </div>
+</BaseLayout>
+
+<style>
+  .hero { padding: 4.5rem 0 3.5rem; overflow: hidden; }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .hero-text { max-width: 580px; }
+  .hero-art {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  .hero-art::before {
+    content: '';
+    position: absolute;
+    inset: -10% -5%;
+    background: radial-gradient(circle at center, var(--accent-soft) 0%, transparent 65%);
+    z-index: -1;
+    border-radius: 50%;
+  }
+  .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 60ch;
+    margin: 1rem 0 2rem;
+  }
+  .cta-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .link { color: var(--text); text-decoration: none; }
+  .link:hover { color: var(--accent-dark); }
+  .muted { color: var(--text-muted); }
+
+  .paw-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--accent);
+    opacity: 0.45;
+    padding: 1rem 0;
+  }
+  .paw-divider-tight { padding: 0.25rem 0; }
+
+  @media (max-width: 720px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 1.5rem; text-align: left; }
+    .hero-art { order: -1; }
+  }
+</style>

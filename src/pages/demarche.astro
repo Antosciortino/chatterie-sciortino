@@ -1,0 +1,61 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PawPrint from '../components/PawPrint.astro';
+
+const page = await getEntry('pages', 'demarche');
+if (!page) throw new Error('Page demarche introuvable dans src/content/pages/');
+const { Content } = await render(page);
+---
+
+<BaseLayout titre={page.data.titre} description={page.data.description}>
+  <article class="section">
+    <div class="container">
+      <p class="eyebrow">Élevage</p>
+      <h1>{page.data.titre}</h1>
+      <div class="prose">
+        <Content />
+      </div>
+      <div class="signature" aria-hidden="true">
+        <PawPrint size={22} rotate={-10} />
+        <PawPrint size={28} rotate={12} />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose { max-width: 65ch; font-size: 1.05rem; }
+  .prose :global(h2) { margin-top: 2.5rem; }
+  .prose :global(h3) { margin-top: 2rem; }
+  .prose :global(ul) {
+    list-style: none;
+    padding-left: 0;
+  }
+  .prose :global(ol) { padding-left: 1.5rem; }
+  .prose :global(li) {
+    margin-bottom: 0.6rem;
+    padding-left: 2rem;
+    position: relative;
+  }
+  .signature {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    color: var(--accent);
+    opacity: 0.5;
+  }
+  .prose :global(ul li::before) {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 1.1em;
+    height: 1.1em;
+    background-color: var(--accent);
+    opacity: 0.55;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 50 95 C 28 95 22 75 32 60 C 38 50 45 48 50 48 C 55 48 62 50 68 60 C 78 75 72 95 50 95 Z' fill='black'/><ellipse cx='22' cy='42' rx='8' ry='11' fill='black'/><ellipse cx='40' cy='22' rx='8' ry='11' fill='black'/><ellipse cx='60' cy='22' rx='8' ry='11' fill='black'/><ellipse cx='78' cy='42' rx='8' ry='11' fill='black'/></svg>") center / contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 50 95 C 28 95 22 75 32 60 C 38 50 45 48 50 48 C 55 48 62 50 68 60 C 78 75 72 95 50 95 Z' fill='black'/><ellipse cx='22' cy='42' rx='8' ry='11' fill='black'/><ellipse cx='40' cy='22' rx='8' ry='11' fill='black'/><ellipse cx='60' cy='22' rx='8' ry='11' fill='black'/><ellipse cx='78' cy='42' rx='8' ry='11' fill='black'/></svg>") center / contain no-repeat;
+  }
+</style>

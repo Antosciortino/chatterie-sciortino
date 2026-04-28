@@ -1,0 +1,151 @@
+backend:
+  name: github
+  repo: TODO_USER/chatterie-sciortino
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+site_url: https://chatterie-sciortino.netlify.app
+display_url: https://chatterie-sciortino.netlify.app
+logo_url: /favicon.svg
+locale: fr
+
+media_folder: src/content/media
+public_folder: /src/content/media
+
+editor:
+  preview: false
+
+# Note : les collections `chats` et `portees` redéfinissent `media_folder`
+# en chemin relatif pour que les photos soient stockées à côté des entrées,
+# ce qui permet à Astro `image()` de les optimiser automatiquement.
+
+collections:
+  - name: chats
+    label: Nos chats
+    label_singular: Chat
+    description: 'Les reproducteurs de la chatterie (mâle et femelle).'
+    folder: src/content/chats
+    media_folder: media
+    public_folder: media
+    create: true
+    slug: '{{slug}}'
+    summary: '{{nom}} — {{sexe}} · {{couleur}}'
+    sortable_fields: [ordre, nom, date_naissance]
+    fields:
+      - { name: nom, label: Nom du chat, widget: string, hint: 'Le nom utilisé dans le pedigree LOOF.' }
+      - name: sexe
+        label: Sexe
+        widget: select
+        options:
+          - { label: 'Femelle', value: 'femelle' }
+          - { label: 'Mâle', value: 'mâle' }
+      - { name: date_naissance, label: Date de naissance, widget: datetime, time_format: false, format: 'YYYY-MM-DD', date_format: 'DD/MM/YYYY' }
+      - name: couleur
+        label: 'Couleur / Pattern'
+        widget: string
+        hint: 'Ex : « Seal point mitted », « Blue bicolore », « Lilac point ». Indiquer aussi « lynx » ou « tortie » le cas échéant.'
+      - { name: pedigree_loof, label: Numéro de pedigree LOOF, widget: string, required: false, hint: 'Numéro figurant sur le pedigree officiel délivré par le LOOF.' }
+      - { name: numero_icad, label: Numéro ICAD, widget: string, required: false, hint: '15 chiffres — figure sur la carte d''identification.' }
+      - { name: tests_sante, label: Tests de santé, widget: text, required: false, hint: 'Ex : HCM négatif (mai 2025), PKD négatif (janvier 2024), FIV/FeLV négatifs.' }
+      - { name: photo, label: Photo principale, widget: image, hint: 'Photo affichée en grand sur la fiche du chat.' }
+      - name: galerie
+        label: Galerie de photos
+        widget: list
+        required: false
+        summary: '{{fields.image}}'
+        field: { name: image, label: Photo, widget: image }
+      - { name: ordre, label: Ordre d''affichage, widget: number, default: 0, hint: 'Plus petit = affiché en premier (0 par défaut).' }
+      - { name: body, label: Description et caractère, widget: markdown, required: false, hint: 'Quelques lignes pour présenter ce chat — son tempérament, ses particularités.' }
+
+  - name: portees
+    label: Portées
+    label_singular: Portée
+    description: 'Une portée par an, avec la liste des chatons et leur statut.'
+    folder: src/content/portees
+    media_folder: media
+    public_folder: media
+    create: true
+    slug: '{{slug}}'
+    summary: '{{titre}} — {{date_naissance}}'
+    sortable_fields: [date_naissance, titre]
+    fields:
+      - { name: titre, label: Titre de la portée, widget: string, hint: 'Ex : « Portée 2026 — Luna × Apollon »' }
+      - { name: date_naissance, label: Date de naissance des chatons, widget: datetime, time_format: false, format: 'YYYY-MM-DD', date_format: 'DD/MM/YYYY' }
+      - name: pere
+        label: Père
+        widget: relation
+        collection: chats
+        search_fields: [nom]
+        display_fields: [nom]
+        value_field: '{{slug}}'
+        hint: 'Choisis le mâle dans la liste des chats déjà enregistrés.'
+      - name: mere
+        label: Mère
+        widget: relation
+        collection: chats
+        search_fields: [nom]
+        display_fields: [nom]
+        value_field: '{{slug}}'
+        hint: 'Choisis la femelle dans la liste des chats déjà enregistrés.'
+      - { name: numero_portee_loof, label: Numéro de portée LOOF, widget: string, hint: 'OBLIGATOIRE — délivré par le LOOF lors de la déclaration de portée.' }
+      - { name: icad_mere, label: Numéro ICAD de la mère, widget: string, hint: 'OBLIGATOIRE — 15 chiffres figurant sur la carte d''identification de la mère.' }
+      - { name: photo_couverture, label: Photo de couverture, widget: image, required: false, hint: 'Photo principale qui présente la portée (facultatif).' }
+      - name: chatons
+        label: Chatons
+        label_singular: Chaton
+        widget: list
+        min: 1
+        summary: '{{fields.nom}} ({{fields.sexe}}, {{fields.couleur}}) — {{fields.statut}}'
+        hint: 'Clique sur « + Ajouter un chaton » pour chaque chaton de la portée.'
+        fields:
+          - { name: nom, label: Nom du chaton, widget: string }
+          - name: sexe
+            label: Sexe
+            widget: select
+            options:
+              - { label: 'Femelle', value: 'femelle' }
+              - { label: 'Mâle', value: 'mâle' }
+          - { name: couleur, label: 'Couleur / Pattern', widget: string, hint: 'Ex : Seal point mitted' }
+          - name: statut
+            label: Statut
+            widget: select
+            default: 'disponible'
+            options:
+              - { label: 'Disponible', value: 'disponible' }
+              - { label: 'Réservé', value: 'réservé' }
+              - { label: 'Parti dans sa famille', value: 'parti' }
+          - name: photos
+            label: Photos du chaton
+            widget: list
+            required: false
+            summary: '{{fields.image}}'
+            field: { name: image, label: Photo, widget: image }
+          - { name: notes, label: Petit mot, widget: text, required: false, hint: 'Quelques lignes pour décrire ce chaton (facultatif).' }
+      - { name: body, label: Texte de présentation de la portée, widget: markdown, required: false, hint: 'Texte affiché sous la photo de couverture (facultatif).' }
+
+  - name: pages
+    label: Pages du site
+    description: 'Les textes des pages "Démarche", "Contact" et "Mentions légales".'
+    files:
+      - name: demarche
+        label: Notre démarche
+        file: src/content/pages/demarche.md
+        fields:
+          - { name: titre, label: Titre de la page, widget: string }
+          - { name: description, label: Description courte (référencement), widget: string, required: false, hint: 'Phrase qui apparaît dans Google.' }
+          - { name: body, label: Contenu de la page, widget: markdown }
+      - name: contact
+        label: Contact
+        file: src/content/pages/contact.md
+        fields:
+          - { name: titre, label: Titre de la page, widget: string }
+          - { name: description, label: Description courte (référencement), widget: string, required: false }
+          - { name: body, label: Contenu de la page, widget: markdown }
+      - name: mentions-legales
+        label: Mentions légales
+        file: src/content/pages/mentions-legales.md
+        fields:
+          - { name: titre, label: Titre de la page, widget: string }
+          - { name: description, label: Description courte (référencement), widget: string, required: false }
+          - { name: body, label: Contenu de la page, widget: markdown }

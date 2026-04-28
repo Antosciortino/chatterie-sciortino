@@ -1,0 +1,25 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const page = await getEntry('pages', 'contact');
+if (!page) throw new Error('Page contact introuvable dans src/content/pages/');
+const { Content } = await render(page);
+---
+
+<BaseLayout titre={page.data.titre} description={page.data.description}>
+  <article class="section">
+    <div class="container">
+      <p class="eyebrow">Nous contacter</p>
+      <h1>{page.data.titre}</h1>
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose { max-width: 60ch; font-size: 1.05rem; }
+  .prose :global(a) { font-weight: 500; }
+</style>

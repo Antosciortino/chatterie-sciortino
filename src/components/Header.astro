@@ -1,0 +1,127 @@
+---
+const links = [
+  { href: '/', label: 'Accueil' },
+  { href: '/parents/', label: 'Nos chats' },
+  { href: '/portee/', label: 'Chatons' },
+  { href: '/demarche/', label: 'Notre démarche' },
+  { href: '/contact/', label: 'Contact' },
+];
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="brand">
+      <span class="brand-mark">Chatterie</span>
+      <span class="brand-name">Sciortino</span>
+    </a>
+    <nav aria-label="Navigation principale">
+      <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-list">
+        {links.map(l => (
+          <li><a href={l.href} class:list={[{ active: path === l.href }]}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--border);
+    background: rgba(251, 245, 236, 0.92);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem var(--gutter);
+    gap: 1rem;
+  }
+  .brand {
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+  .brand-mark {
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+  .brand-name {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .nav-list {
+    display: flex;
+    gap: 1.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-list a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+  }
+  .nav-list a:hover, .nav-list a.active {
+    color: var(--accent-dark);
+    border-bottom-color: var(--accent);
+  }
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: 0;
+    padding: 0.5rem;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+  }
+
+  @media (max-width: 720px) {
+    .nav-toggle { display: flex; }
+    .nav-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    .nav-list.open { max-height: 400px; }
+    .nav-list li { border-top: 1px solid var(--border); }
+    .nav-list a { display: block; padding: 0.9rem var(--gutter); }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const list = document.querySelector<HTMLUListElement>('.nav-list');
+  btn?.addEventListener('click', () => {
+    const open = list?.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(!!open));
+  });
+</script>

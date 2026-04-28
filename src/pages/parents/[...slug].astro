@@ -1,0 +1,155 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PawPrint from '../../components/PawPrint.astro';
+
+export async function getStaticPaths() {
+  const chats = await getCollection('chats');
+  return chats.map(chat => ({ params: { slug: chat.id }, props: { chat } }));
+}
+
+const { chat } = Astro.props;
+const { Content } = await render(chat);
+const { data } = chat;
+const naissance = data.date_naissance.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+const photos = [data.photo, ...data.galerie];
+---
+
+<BaseLayout titre={data.nom} description={`${data.nom}, ${data.sexe} ${data.couleur} — Chatterie Sciortino.`}>
+  <article class="section">
+    <div class="container">
+      <p class="eyebrow">{data.sexe === 'mâle' ? 'Mâle' : 'Femelle'}</p>
+      <h1>{data.nom}</h1>
+
+      <div class="layout">
+        <div class="photo-stack">
+          <div class="photo">
+            {photos.map((p, i) => (
+              <Image src={p} alt={data.nom} width={900} height={675} class:list={['main-photo', { active: i === 0 }]} />
+            ))}
+          </div>
+          {photos.length > 1 && (
+            <div class="thumbs" role="tablist" aria-label="Plus de photos">
+              {photos.map((p, i) => (
+                <button type="button" class:list={['thumb', { active: i === 0 }]} data-index={i} aria-label={`Photo ${i + 1}`}>
+                  <Image src={p} alt="" width={140} height={105} />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <dl class="facts">
+          <dt>Sexe</dt><dd>{data.sexe === 'mâle' ? 'Mâle' : 'Femelle'}</dd>
+          <dt>Né{data.sexe === 'femelle' ? 'e' : ''} le</dt><dd>{naissance}</dd>
+          <dt>Couleur</dt><dd>{data.couleur}</dd>
+          {data.pedigree_loof && <><dt>Pedigree LOOF</dt><dd>{data.pedigree_loof}</dd></>}
+          {data.numero_icad && <><dt>Numéro ICAD</dt><dd>{data.numero_icad}</dd></>}
+          {data.tests_sante && <><dt>Tests santé</dt><dd>{data.tests_sante}</dd></>}
+        </dl>
+      </div>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <p class="back-link">
+        <a href="/parents/">← Retour à tous les chats</a>
+        <PawPrint size={16} rotate={-15} class="back-paw" />
+      </p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin: 2rem 0;
+  }
+  .photo-stack { display: flex; flex-direction: column; gap: 0.6rem; }
+  .photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--bg-alt);
+  }
+  .main-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .main-photo.active { opacity: 1; }
+  .thumbs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .thumb {
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.15s, transform 0.15s;
+    width: 70px;
+    height: 52px;
+    flex-shrink: 0;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb.active { border-color: var(--accent); }
+  .thumb:hover { transform: translateY(-1px); }
+  .facts {
+    background: var(--bg-alt);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 1.5rem;
+    row-gap: 0.75rem;
+  }
+  .facts dt {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    align-self: center;
+  }
+  .facts dd { margin: 0; align-self: center; }
+  .prose { max-width: 65ch; margin-top: 1rem; }
+  .back-link {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .back-link :global(.back-paw) { color: var(--accent); opacity: 0.55; }
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.photo-stack').forEach(stack => {
+    const mains = stack.querySelectorAll<HTMLElement>('.main-photo');
+    const thumbs = stack.querySelectorAll<HTMLButtonElement>('.thumb');
+    thumbs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        mains.forEach((m, i) => m.classList.toggle('active', i === idx));
+        thumbs.forEach((t, i) => t.classList.toggle('active', i === idx));
+      });
+    });
+  });
+</script>

@@ -1,0 +1,24 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const page = await getEntry('pages', 'mentions-legales');
+if (!page) throw new Error('Page mentions-legales introuvable dans src/content/pages/');
+const { Content } = await render(page);
+---
+
+<BaseLayout titre={page.data.titre} description={page.data.description}>
+  <article class="section">
+    <div class="container">
+      <h1>{page.data.titre}</h1>
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose { max-width: 65ch; font-size: 0.95rem; color: var(--text-muted); }
+  .prose :global(h2) { color: var(--text); margin-top: 2rem; }
+</style>

@@ -1,0 +1,57 @@
+---
+interface Props {
+  size?: number;
+  class?: string;
+}
+const { size = 220, class: className = '' } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 240 140"
+  width={size}
+  height={size * 140 / 240}
+  class={`sleeping-cat ${className}`}
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <!-- Body : kidney bean curling to the right of the head -->
+  <path d="M 80 90
+           C 105 70 145 65 180 72
+           C 215 80 222 110 205 122
+           C 175 132 130 130 100 124
+           C 78 118 70 102 80 90 Z"
+        fill="currentColor" opacity="0.85"/>
+
+  <!-- Tail looping back over the body -->
+  <path d="M 208 110 Q 232 96 218 78 Q 198 68 178 80"
+        fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- Head (clearly distinct, on the left) -->
+  <ellipse cx="62" cy="84" rx="30" ry="27" fill="currentColor"/>
+
+  <!-- Ears (apex up, sitting on top of the head) -->
+  <path d="M 42 64 L 44 38 L 62 60 Z" fill="currentColor"/>
+  <path d="M 82 64 L 80 38 L 62 60 Z" fill="currentColor"/>
+
+  <!-- Inner ear hint (lighter), placed on the outer edge of each ear -->
+  <path d="M 43 62 L 45 44 L 50 58 Z" fill="#fbf5ec" opacity="0.35"/>
+  <path d="M 81 62 L 79 44 L 74 58 Z" fill="#fbf5ec" opacity="0.35"/>
+
+  <!-- Closed eye (gentle smile curve) -->
+  <path d="M 52 88 Q 60 92 68 88"
+        fill="none" stroke="#fbf5ec" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- Tiny nose -->
+  <ellipse cx="40" cy="92" rx="2.4" ry="1.8" fill="#fbf5ec" opacity="0.6"/>
+
+  <!-- Sleepy z's drifting up -->
+  <g fill="currentColor" opacity="0.55" font-family="Lora, Georgia, serif" font-style="italic">
+    <text x="105" y="45" font-size="18">z</text>
+    <text x="120" y="30" font-size="13">z</text>
+    <text x="132" y="18" font-size="9">z</text>
+  </g>
+</svg>
+
+<style>
+  .sleeping-cat { display: block; color: var(--text-muted); }
+</style>

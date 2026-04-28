@@ -1,0 +1,86 @@
+---
+interface Props {
+  size?: number;
+  class?: string;
+  float?: boolean;
+}
+const { size = 160, class: className = '', float = false } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 200 200"
+  width={size}
+  height={size}
+  class:list={['ragdoll-face', className, { float }]}
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <defs>
+    <radialGradient id="rd-cheek" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e8b8a8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#e8b8a8" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer ears : dark seal-point with a softly rounded apex -->
+  <path d="M 78 78 L 42 96 L 24 48 Q 22 42 27 45 L 78 78 Z"
+        fill="#4a3024" stroke="#3d2e25" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 122 78 L 158 96 L 176 48 Q 178 42 173 45 L 122 78 Z"
+        fill="#4a3024" stroke="#3d2e25" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Inner ear pink hint -->
+  <path d="M 60 76 L 50 84 L 38 60 Q 36 56 42 60 L 60 76 Z"
+        fill="#d99fa0" opacity="0.8"/>
+  <path d="M 140 76 L 150 84 L 162 60 Q 164 56 158 60 L 140 76 Z"
+        fill="#d99fa0" opacity="0.8"/>
+
+  <!-- Head -->
+  <ellipse cx="100" cy="125" rx="68" ry="58" fill="#fbf5ec" stroke="#3d2e25" stroke-width="2.5"/>
+
+  <!-- Seal-point face mask : same dark seal as the ears, slightly softened -->
+  <path d="M 60 122 Q 100 95 140 122 Q 145 155 100 165 Q 55 155 60 122 Z" fill="#4a3024" opacity="0.7"/>
+
+  <!-- Cheek blush -->
+  <ellipse cx="62" cy="138" rx="14" ry="8" fill="url(#rd-cheek)"/>
+  <ellipse cx="138" cy="138" rx="14" ry="8" fill="url(#rd-cheek)"/>
+
+  <!-- Eyes -->
+  <ellipse cx="78" cy="125" rx="11" ry="13" fill="#6b9bc7"/>
+  <ellipse cx="122" cy="125" rx="11" ry="13" fill="#6b9bc7"/>
+  <ellipse cx="78" cy="125" rx="11" ry="13" fill="none" stroke="#3d2e25" stroke-width="2"/>
+  <ellipse cx="122" cy="125" rx="11" ry="13" fill="none" stroke="#3d2e25" stroke-width="2"/>
+
+  <!-- Pupils -->
+  <ellipse cx="78" cy="127" rx="2.5" ry="8" fill="#1a1a1a"/>
+  <ellipse cx="122" cy="127" rx="2.5" ry="8" fill="#1a1a1a"/>
+
+  <!-- Eye highlights -->
+  <circle cx="81" cy="121" r="2.2" fill="#fff"/>
+  <circle cx="125" cy="121" r="2.2" fill="#fff"/>
+
+  <!-- Nose -->
+  <path d="M 94 148 L 106 148 Q 100 158 100 158 Q 100 158 94 148 Z" fill="#d99fa0" stroke="#3d2e25" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Mouth -->
+  <path d="M 100 158 Q 100 165 90 162 M 100 158 Q 100 165 110 162" fill="none" stroke="#3d2e25" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Whiskers -->
+  <g stroke="#3d2e25" stroke-width="1.4" stroke-linecap="round" opacity="0.55">
+    <path d="M 62 152 L 30 148"/>
+    <path d="M 62 158 L 28 162"/>
+    <path d="M 138 152 L 170 148"/>
+    <path d="M 138 158 L 172 162"/>
+  </g>
+</svg>
+
+<style>
+  .ragdoll-face { display: block; }
+  .ragdoll-face.float { animation: bob 6s ease-in-out infinite; }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ragdoll-face.float { animation: none; }
+  }
+</style>
