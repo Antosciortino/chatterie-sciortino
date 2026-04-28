@@ -1,10 +1,10 @@
 ---
-titre: Portée 2026 — Luna × Apollon
+titre: Portée 2026 Luna × Apollon
 date_naissance: 2026-02-14
 pere: apollon
 mere: luna
-numero_portee_loof: "LO 2026.02.04321"
-icad_mere: "250269812345678"
+numero_portee_loof: LO 2026.02.04321
+icad_mere: '250269812345678'
 chatons:
   - nom: Aria
     sexe: femelle
