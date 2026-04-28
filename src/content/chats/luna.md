@@ -1,10 +1,10 @@
 ---
-nom: Lunaa
+nom: Luna
 sexe: femelle
 date_naissance: 2023-04-12
 couleur: Seal point
 pedigree_loof: LO 2023.04.12345
-numero_icad: '250269812345678'
+numero_icad: "250269812345678"
 tests_sante: HCM négatif (mai 2025), PKD négatif (juin 2024), FIV/FeLV négatifs.
 photo: media/luna.jpg
 ordre: 1
