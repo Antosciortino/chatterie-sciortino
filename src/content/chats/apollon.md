@@ -2,8 +2,8 @@
 nom: Apollon
 sexe: mâle
 date_naissance: 2022-11-03
-couleur: Blue mitted
-pedigree_loof: "LO 2022.11.06789"
+couleur: Seal mitted
+pedigree_loof: LO 2022.11.06789
 numero_icad: "250269887654321"
 tests_sante: HCM négatif (mars 2025), PKD négatif (octobre 2023), FIV/FeLV négatifs.
 photo: media/apollon.jpg
